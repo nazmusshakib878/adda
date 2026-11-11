@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root,
+[data-theme="light"] {
+  --background: #f6f9f7;
+  --surface: #ffffff;
+  --primary: #138a5e;
+  --on-primary: #ffffff;
+  --text: #142d23;
+  --secondary: #687d73;
+  --accent-surface: #e7f5ee;
+  --border: #e2eae5;
+  --divider: #edf2ee;
+  --alert: #d84a51;
+  --alert-text: #bd4450;
+  --bar-muted: #b9e6cf;
+  --chip-active-bg: #e7f5ee;
+  --toast-shadow: 0 12px 32px rgba(20, 45, 35, 0.12);
+}
+
+[data-theme="dark"] {
+  --background: #101b17;
+  --surface: #1b2a23;
+  --primary: #36cb94;
+  --on-primary: #092a1b;
+  --text: #f3f7f5;
+  --secondary: #a8bcb1;
+  --accent-surface: #274c39;
+  --border: #30443a;
+  --divider: #263930;
+  --alert: #d84a51;
+  --alert-text: #f0767e;
+  --bar-muted: #274c39;
+  --chip-active-bg: #274c39;
+  --toast-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+@layer base {
+  html,
+  body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: var(--font-inter), var(--font-bengali), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+}
+
+.font-bengali {
+  font-family: var(--font-bengali), var(--font-inter), sans-serif;
+}
+
+/* Subtle custom scrollbars for 390x844 mobile viewport & tables */
+.bondhu-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.bondhu-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bondhu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(104, 125, 115, 0.25);
+  border-radius: 9999px;
+}
+
+.bondhu-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(104, 125, 115, 0.45);
+}

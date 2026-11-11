@@ -1,0 +1,86 @@
+export const COLOR_ROLES = [
+  {
+    name: "Emerald",
+    hex: "#138A5E",
+    darkHex: "#36CB94",
+    role: "Primary brand & actions",
+    bgClass: "bg-[#138A5E]",
+    textClass: "text-white",
+  },
+  {
+    name: "Ivory",
+    hex: "#F6F9F7",
+    darkHex: "#101B17",
+    role: "Canvas background",
+    bgClass: "bg-[#F6F9F7] border border-[#E2EAE5]",
+    textClass: "text-[#142D23]",
+  },
+  {
+    name: "Ink",
+    hex: "#142D23",
+    darkHex: "#F3F7F5",
+    role: "Primary typography",
+    bgClass: "bg-[#142D23]",
+    textClass: "text-white",
+  },
+  {
+    name: "Sage",
+    hex: "#E7F5EE",
+    darkHex: "#274C39",
+    role: "Soft accent & active chips",
+    bgClass: "bg-[#E7F5EE]",
+    textClass: "text-[#138A5E]",
+  },
+  {
+    name: "Slate",
+    hex: "#687D73",
+    darkHex: "#A8BCB1",
+    role: "Secondary copy & metadata",
+    bgClass: "bg-[#687D73]",
+    textClass: "text-white",
+  },
+  {
+    name: "Alert",
+    hex: "#D84A51",
+    darkHex: "#D84A51",
+    role: "Destructive actions & warnings",
+    bgClass: "bg-[#D84A51]",
+    textClass: "text-white",
+  },
+] as const;
+
+export const LAYOUT_METRICS = {
+  spacingScale: [4, 8, 12, 16, 24, 32],
+  radii: [14, 16, 18, 20, 24, 32],
+  minTouchTarget: 44,
+  mobileViewport: { width: 390, height: 844 },
+  desktopViewport: { width: 1440, height: 1024 },
+} as const;
+
+export const DESIGN_SYSTEM_ICONS = [
+  "home",
+  "chat",
+  "phone",
+  "user",
+  "search",
+  "bell",
+  "plus",
+  "back",
+  "chevron",
+  "video",
+  "mic",
+  "heart",
+  "share",
+  "image",
+  "more",
+  "check",
+  "send",
+  "lock",
+  "settings",
+  "speaker",
+  "file",
+  "moon",
+  "globe",
+] as const;
+
+export type BondhuIconName = (typeof DESIGN_SYSTEM_ICONS)[number];
