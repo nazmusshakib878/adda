@@ -140,17 +140,109 @@ export function MetricCard({
   );
 }
 
+interface DeviceClock {
+  clock: string;
+  period: string;
+  dateTimeAttr: string;
+  label: string;
+}
+
+const STATUS_TIME_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+});
+
+function formatDeviceClock(date: Date): DeviceClock {
+  const parts = STATUS_TIME_FORMATTER.formatToParts(date);
+  const hour = parts.find((p) => p.type === "hour")?.value ?? "";
+  const minute = parts.find((p) => p.type === "minute")?.value ?? "";
+  const period = (parts.find((p) => p.type === "dayPeriod")?.value ?? "").toUpperCase();
+  const clock =
+    hour && minute ? `${hour}:${minute}` : STATUS_TIME_FORMATTER.format(date);
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return {
+    clock,
+    period,
+    dateTimeAttr: `${pad(date.getHours())}:${pad(date.getMinutes())}`,
+    label: period ? `${clock} ${period}` : clock,
+  };
+}
+
+/**
+ * Syncs with the user's device clock after hydration and updates cleanly at each minute boundary.
+ */
+function useDeviceClock(): DeviceClock | null {
+  const [now, setNow] = React.useState<DeviceClock | null>(null);
+
+  React.useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    const syncClock = () => {
+      const current = new Date();
+      setNow(formatDeviceClock(current));
+
+      // Align next tick to the top of the upcoming minute plus a tiny buffer to avoid early firing.
+      const msUntilNextMinute =
+        (60 - current.getSeconds()) * 1000 - current.getMilliseconds() + 50;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(syncClock, Math.max(msUntilNextMinute, 100));
+    };
+
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === "visible") {
+        syncClock();
+      }
+    };
+
+    syncClock();
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+    };
+  }, []);
+
+  return now;
+}
+
 export function MobileStatusBar({
   lightText = false,
 }: {
   lightText?: boolean;
 }) {
   const color = lightText ? "text-[#E6F5ED]" : "text-[var(--text)]";
+  const deviceClock = useDeviceClock();
+
   return (
     <div
       className={`flex h-[44px] w-full shrink-0 items-center justify-between px-[26px] pt-[6px] select-none ${color}`}
     >
-      <span className="text-[14px] font-semibold leading-[1.45]">9:41</span>
+      {deviceClock ? (
+        <time
+          dateTime={deviceClock.dateTimeAttr}
+          aria-label={deviceClock.label}
+          className="inline-flex items-baseline gap-[4px] text-[14px] font-semibold leading-[1.45] tracking-[-0.01em] tabular-nums whitespace-nowrap"
+        >
+          <span>{deviceClock.clock}</span>
+          {deviceClock.period && (
+            <span className="text-[10.5px] font-semibold leading-none tracking-[0.04em] opacity-85">
+              {deviceClock.period}
+            </span>
+          )}
+        </time>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="inline-block min-w-[54px] text-[14px] font-semibold leading-[1.45] opacity-0"
+        >
+          00:00
+        </span>
+      )}
       <span className="text-[11px] font-normal tracking-wider">{`▰  ▰  ▰`}</span>
     </div>
   );
