@@ -159,7 +159,7 @@ export function AdminWorkspace() {
   );
 
   return (
-    <div className="flex min-h-[calc(100vh-56px)] w-full bg-[var(--background)]">
+    <div className="flex min-h-screen w-full bg-[var(--background)]">
       {/* Desktop Fixed Sidebar */}
       <aside className="hidden shrink-0 lg:block">{sidebarContent}</aside>
 

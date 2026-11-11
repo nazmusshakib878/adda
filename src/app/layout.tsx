@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_Bengali } from "next/font/google";
 import "./globals.css";
 import { BondhuProvider } from "@/components/context/BondhuContext";
-import { StudioTopNav } from "@/components/ui/StudioTopNav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +37,6 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-[var(--background)] text-[var(--text)] antialiased">
         <BondhuProvider>
-          <StudioTopNav />
           {children}
         </BondhuProvider>
       </body>

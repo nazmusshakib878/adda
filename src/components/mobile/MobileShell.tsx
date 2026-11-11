@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useBondhu } from "@/components/context/BondhuContext";
 import { MOBILE_SCREENS, type MobileScreenId } from "@/data/bondhu-data";
 import { AuthOnboardingViews } from "./AuthOnboardingViews";
@@ -81,21 +81,17 @@ function getScreenCategory(id: MobileScreenId) {
   return "system";
 }
 
-const GROUPS = [
-  "Onboarding & Auth",
-  "Home & Social",
-  "Messaging",
-  "Calls",
-  "Profile & Settings",
-  "Variants & States",
-] as const;
-
 export function MobileShell() {
   const { activeScreen, setActiveScreen, resolvedTheme } = useBondhu();
-  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("screen");
+    if (param && MOBILE_SCREENS.some((s) => s.id === param)) {
+      setActiveScreen(param as MobileScreenId);
+    }
+  }, [setActiveScreen]);
 
   const category = getScreenCategory(activeScreen);
-  const currentMeta = MOBILE_SCREENS.find((s) => s.id === activeScreen);
 
   const isForcedDarkFrame =
     activeScreen === "42-home-dark" ||
@@ -122,118 +118,13 @@ export function MobileShell() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-2 py-2 sm:gap-6 sm:px-6 sm:py-5 md:flex-row md:items-start lg:py-6">
-      {/* Tablet & Desktop Interactive Screen Index (All 52 Figma Frames) */}
-      <aside className="hidden shrink-0 rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-4 md:block md:w-[260px] lg:w-[320px] lg:p-5 xl:w-[340px]">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-3.5">
-          <div>
-            <p className="text-[11px] font-semibold tracking-wider text-[var(--primary)]">
-              01 · MOBILE EXPERIENCE
-            </p>
-            <h2 className="mt-0.5 text-[16px] font-semibold text-[var(--text)] lg:text-[17px]">
-              52 Interactive Screens
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={() => setActiveScreen("11-home-feed")}
-            className="cursor-pointer rounded-[10px] bg-[var(--accent-surface)] px-3 py-1.5 text-[11px] font-semibold text-[var(--primary)]"
-          >
-            Jump to Home
-          </button>
-        </div>
-
-        <div className="bondhu-scroll mt-4 flex max-h-[calc(100dvh-210px)] flex-col gap-5 overflow-y-auto pr-1">
-          {GROUPS.map((group) => (
-            <div key={group}>
-              <p className="mb-2 text-[11px] font-semibold tracking-wide text-[var(--secondary)]">
-                {group.toUpperCase()}
-              </p>
-              <div className="flex flex-col gap-1">
-                {MOBILE_SCREENS.filter((s) => s.group === group).map((s) => {
-                  const isActive = s.id === activeScreen;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => setActiveScreen(s.id)}
-                      className={`flex cursor-pointer items-center justify-between rounded-[10px] px-3 py-2 text-left text-[12px] transition-colors ${
-                        isActive
-                          ? "bg-[var(--accent-surface)] font-semibold text-[var(--primary)]"
-                          : "text-[var(--text)] hover:bg-[var(--background)]"
-                      }`}
-                    >
-                      <span>{s.label}</span>
-                      {isActive && (
-                        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </aside>
-
-      {/* Main Mobile Stage */}
-      <main className="flex min-w-0 flex-1 flex-col items-center">
-        {/* Compact mobile screen switcher bar (shown on < md) */}
-        <div className="mb-2.5 flex w-full max-w-[390px] items-center justify-between rounded-[14px] border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 md:hidden">
-          <div className="min-w-0 pr-2">
-            <p className="text-[10px] font-semibold text-[var(--primary)]">
-              ACTIVE SCREEN
-            </p>
-            <p className="truncate text-[12px] font-semibold text-[var(--text)]">
-              {currentMeta?.label}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setDrawerOpen((o) => !o)}
-            className="shrink-0 cursor-pointer rounded-[10px] bg-[var(--accent-surface)] px-3 py-1.5 text-[11px] font-semibold text-[var(--primary)]"
-          >
-            {drawerOpen ? "Close" : "All 52 screens"}
-          </button>
-        </div>
-
-        {drawerOpen && (
-          <div className="bondhu-scroll mb-3 max-h-[280px] w-full max-w-[390px] overflow-y-auto rounded-[18px] border border-[var(--border)] bg-[var(--surface)] p-3 md:hidden">
-            <div className="grid grid-cols-1 gap-1">
-              {MOBILE_SCREENS.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveScreen(s.id);
-                    setDrawerOpen(false);
-                  }}
-                  className={`rounded-[8px] px-3 py-2 text-left text-[12px] ${
-                    s.id === activeScreen
-                      ? "bg-[var(--accent-surface)] font-semibold text-[var(--primary)]"
-                      : "text-[var(--text)]"
-                  }`}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Active Responsive Device Frame (fits both mobile viewports & 768px-900px laptops without clipping) */}
-        <div
-          data-theme={frameTheme}
-          className="relative h-[calc(100dvh-164px)] min-h-[540px] max-h-[844px] w-full max-w-[390px] overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--background)] shadow-[0_24px_60px_rgba(20,45,35,0.14)] sm:h-[min(844px,calc(100dvh-124px))] sm:min-h-[600px] sm:rounded-[36px]"
-        >
-          {renderScreen()}
-        </div>
-
-        <p className="mt-2.5 hidden text-center text-[12px] text-[var(--secondary)] sm:block">
-          Showing <span className="font-semibold text-[var(--text)]">{currentMeta?.label}</span>{" "}
-          · Click any element inside the prototype to navigate live flows.
-        </p>
-      </main>
-    </div>
+    <main className="flex min-h-[100dvh] w-full items-center justify-center bg-[var(--background)] sm:p-4">
+      <div
+        data-theme={frameTheme}
+        className="relative h-[100dvh] w-full overflow-hidden bg-[var(--background)] sm:h-[min(844px,calc(100dvh-32px))] sm:min-h-[560px] sm:max-w-[390px] sm:rounded-[36px] sm:border sm:border-[var(--border)] sm:shadow-[0_24px_60px_rgba(20,45,35,0.14)]"
+      >
+        {renderScreen()}
+      </div>
+    </main>
   );
 }
